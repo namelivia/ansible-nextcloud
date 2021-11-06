@@ -1,0 +1,155 @@
+---
+#TODO: This is due to a bug? when creating docker networks while the VPN
+# is connected.
+- name: Create the dockernetwork
+  docker_network:
+    name: "{{ docker_network_name }}"
+    ipam_options:
+      subnet: 172.24.24.0/24
+
+- name: Create the nextcloud data volumne
+  docker_volume:
+    name: nextcloud-data
+
+- name: Create the html folder volume
+  docker_volume:
+    name: html-folder
+
+- name: Create the files directory
+  file:
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
+    state: directory
+
+- name: Create the config directory
+  file:
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
+    state: directory
+
+- name: Create the data directory
+  file:
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data"
+    state: directory
+
+- name: Create the themes directory
+  file:
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes"
+    state: directory
+
+- name: Create the apps directory
+  file:
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
+    state: directory
+
+#TODO: There is no official MariaDB image for armv7
+- name: Create database container
+  docker_container:
+    name: "{{ database_container_name}}"
+    image: "jsurf/rpi-mariadb:latest"
+    restart_policy: "always"
+    memory: "100MB"
+    exposed_ports:
+      - "3306"
+    networks:
+      - name: "{{ docker_network_name }}"
+    volumes:
+        - nextcloud-database:/var/lib/mysql
+    log_driver: "awslogs"
+    log_options:
+        awslogs-region: "{{cloudwatch_region}}"
+        awslogs-group: "{{cloudwatch_log_group}}"
+        awslogs-stream: "{{ database_container_name }}"
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+      MYSQL_DATABASE: "{{ database_name }}"
+      MYSQL_USER: "{{ database_user }}"
+      MYSQL_PASSWORD: "{{ database_password }}"
+
+- name: Create app container
+  docker_container:
+    name: "{{ app_container_name }}"
+    image: "nextcloud:stable-fpm-alpine"
+    restart_policy: "always"
+    exposed_ports:
+      - "9000"
+    networks:
+      - name: "{{ docker_network_name }}"
+    volumes:
+      - html-folder:/var/www/html
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config:/var/www/html/config"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/var/www/html/data"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes:/var/www/html/themes"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps:/var/www/html/apps"
+    log_driver: "awslogs"
+    log_options:
+        awslogs-region: "{{cloudwatch_region}}"
+        awslogs-group: "{{cloudwatch_log_group}}"
+        awslogs-stream: "nextcloud-app"
+    env:
+      MYSQL_HOST: "{{ database_container_name }}"
+      MYSQL_DATABASE: "{{ database_name }}"
+      MYSQL_USER: "{{ database_user }}"
+      MYSQL_PASSWORD: "{{ database_password }}"
+
+- name: Create nginx container
+  docker_container:
+    name: "{{ application_name }}-nginx"
+    image: "nginx:latest"
+    memory: "10MB"
+    log_driver: "awslogs"
+    log_options:
+        awslogs-region: "{{cloudwatch_region}}"
+        awslogs-group: "{{cloudwatch_log_group}}"
+        awslogs-stream: "{{application_name}}"
+        awslogs-stream: "{{ application_name }}-nginx"
+    restart_policy: "always"
+    exposed_ports:
+      - "80"
+    networks:
+      - name: "{{ docker_network_name }}"
+    volumes:
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/conf.d:/etc/nginx/conf.d"
+      - html-folder:/var/www/html
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config:/var/www/html/config"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/var/www/html/data"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps:/var/www/html/apps"
+    env:
+      VIRTUAL_HOST: "{{ domain_name }}"
+      LETSENCRYPT_HOST: "{{ domain_name }}"
+      VIRTUAL_PORT: "80"
+
+- name: Configure nginx site
+  template:
+    src: ../templates/nextcloud.j2
+    dest: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/conf.d/default.conf"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install the tasks app
+  unarchive:
+    src: ../apps/tasks.tar.gz
+    dest: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
+
+- name: Install the notes app
+  unarchive:
+    src: ../apps/notes.tar.gz
+    dest: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
+
+- name: Install the calendar app
+  unarchive:
+    src: ../apps/calendar.tar.gz
+    dest: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
+
+- name: Setup database backups
+  include_role:
+    name: namelivia.backups
+    tasks_from: setup-mariadb-database-backups
+
+- name: Setup file backups
+  include_role:
+    name: namelivia.backups
+    tasks_from: setup-file-backups
+
+- include_role:
+    name: namelivia.backups
+    tasks_from: setup-s3-backups
