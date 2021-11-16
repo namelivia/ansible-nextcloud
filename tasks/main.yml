@@ -14,7 +14,7 @@
       - dump_day is defined
       - backup_day is defined
 
-#TODO: This is due to a bug? when creating docker networks while the VPN
+# TODO: This is due to a bug? when creating docker networks while the VPN
 # is connected.
 - name: Create the dockernetwork
   docker_network:
@@ -55,7 +55,7 @@
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
     state: directory
 
-#TODO: There is no official MariaDB image for armv7
+# TODO: There is no official MariaDB image for armv7
 - name: Create database container
   docker_container:
     name: "{{ database_container_name}}"
@@ -67,12 +67,12 @@
     networks:
       - name: "{{ docker_network_name }}"
     volumes:
-        - nextcloud-database:/var/lib/mysql
+      - nextcloud-database:/var/lib/mysql
     log_driver: "awslogs"
     log_options:
-        awslogs-region: "{{cloudwatch_region}}"
-        awslogs-group: "{{cloudwatch_log_group}}"
-        awslogs-stream: "{{ database_container_name }}"
+      awslogs-region: "{{ cloudwatch_region }}"
+      awslogs-group: "{{ cloudwatch_log_group }}"
+      awslogs-stream: "{{ database_container_name }}"
     env:
       MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
       MYSQL_DATABASE: "{{ database_name }}"
@@ -96,9 +96,9 @@
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps:/var/www/html/apps"
     log_driver: "awslogs"
     log_options:
-        awslogs-region: "{{cloudwatch_region}}"
-        awslogs-group: "{{cloudwatch_log_group}}"
-        awslogs-stream: "nextcloud-app"
+      awslogs-region: "{{ cloudwatch_region }}"
+      awslogs-group: "{{ cloudwatch_log_group }}"
+      awslogs-stream: "nextcloud-app"
     env:
       MYSQL_HOST: "{{ database_container_name }}"
       MYSQL_DATABASE: "{{ database_name }}"
@@ -112,10 +112,9 @@
     memory: "10MB"
     log_driver: "awslogs"
     log_options:
-        awslogs-region: "{{cloudwatch_region}}"
-        awslogs-group: "{{cloudwatch_log_group}}"
-        awslogs-stream: "{{application_name}}"
-        awslogs-stream: "{{ application_name }}-nginx"
+      awslogs-region: "{{ cloudwatch_region }}"
+      awslogs-group: "{{ cloudwatch_log_group }}"
+      awslogs-stream: "{{ application_name }}-nginx"
     restart_policy: "always"
     exposed_ports:
       - "80"
