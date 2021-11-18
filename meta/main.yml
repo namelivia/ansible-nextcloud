@@ -1,5 +1,5 @@
 galaxy_info:
-  role_name: namelivia.nextcloud
+  role_name: nextcloud
   author: José Ignacio Amelivia Santiago <jignacio.amelivia@gmail.com>
   description: Ansible role I use to install and configure nextcloud
   license: GPLv2

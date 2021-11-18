@@ -11,7 +11,7 @@ collections:
   - community.docker
 
 roles:
-  - src: https://github.com/namelivia/namelivia.nextcloud
+  - src: https://github.com/namelivia/ansible-nextcloud
 ```
 
 ## Required variables (TODO: Update these)
