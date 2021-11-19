@@ -34,31 +34,36 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
     state: directory
+    mode: 0700
 
 - name: Create the config directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
     state: directory
+    mode: 0700
 
 - name: Create the data directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data"
     state: directory
+    mode: 0700
 
 - name: Create the themes directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes"
     state: directory
+    mode: 0700
 
 - name: Create the apps directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
     state: directory
+    mode: 0700
 
 # TODO: There is no official MariaDB image for armv7
 - name: Create database container
   docker_container:
-    name: "{{ database_container_name}}"
+    name: "{{ database_container_name }}"
     image: "jsurf/rpi-mariadb:latest"
     restart_policy: "always"
     memory: "100MB"
@@ -133,7 +138,7 @@
 
 - name: Configure nginx site
   template:
-    src: ../templates/nextcloud.j2
+    src: nextcloud.j2
     dest: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/conf.d/default.conf"
     owner: root
     group: root
@@ -164,6 +169,7 @@
     name: namelivia.backups
     tasks_from: setup-file-backups
 
-- include_role:
+- name: Setup S3 backups
+  include_role:
     name: namelivia.backups
     tasks_from: setup-s3-backups
