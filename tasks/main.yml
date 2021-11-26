@@ -14,13 +14,9 @@
       - dump_day is defined
       - backup_day is defined
 
-# TODO: This is due to a bug? when creating docker networks while the VPN
-# is connected.
 - name: Create the dockernetwork
   docker_network:
     name: "{{ docker_network_name }}"
-    ipam_options:
-      subnet: 172.24.24.0/24
 
 - name: Create the nextcloud data volumne
   docker_volume:
