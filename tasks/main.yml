@@ -4,9 +4,7 @@
     that:
       - application_name is defined
       - docker_network_name is defined
-      - app_container_name is defined
       - domain_name is defined
-      - database_container_name is defined
       - database_name is defined
       - database_user is defined
       - database_password is defined
@@ -59,7 +57,7 @@
 # TODO: There is no official MariaDB image for armv7
 - name: Create database container
   docker_container:
-    name: "{{ database_container_name }}"
+    name: "{{ application_name }}-database"
     image: "jsurf/rpi-mariadb:latest"
     restart_policy: "always"
     memory: "100MB"
@@ -73,7 +71,7 @@
     log_options:
       awslogs-region: "{{ cloudwatch_region }}"
       awslogs-group: "{{ cloudwatch_log_group }}"
-      awslogs-stream: "{{ database_container_name }}"
+      awslogs-stream: "{{ application_name }}-database"
     env:
       MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
       MYSQL_DATABASE: "{{ database_name }}"
@@ -100,9 +98,9 @@
     log_options:
       awslogs-region: "{{ cloudwatch_region }}"
       awslogs-group: "{{ cloudwatch_log_group }}"
-      awslogs-stream: "nextcloud-app"
+      awslogs-stream: "{{ application_name }}-app"
     env:
-      MYSQL_HOST: "{{ database_container_name }}"
+      MYSQL_HOST: "{{ application_name }}-database"
       MYSQL_DATABASE: "{{ database_name }}"
       MYSQL_USER: "{{ database_user }}"
       MYSQL_PASSWORD: "{{ database_password }}"
@@ -160,6 +158,8 @@
   include_role:
     name: ansible-backups
     tasks_from: setup-mariadb-database-backups
+  vars:
+    database_container_name: "{{ application_name }}-database"
 
 - name: Setup file backups
   include_role:
