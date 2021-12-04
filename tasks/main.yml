@@ -84,6 +84,7 @@
   docker_container:
     name: "{{ app_container_name }}"
     image: "nextcloud:stable-fpm-alpine"
+    pull: true
     restart_policy: "always"
     exposed_ports:
       - "9000"
