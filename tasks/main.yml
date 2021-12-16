@@ -81,7 +81,7 @@
 - name: Create app container
   docker_container:
     name: "{{ app_container_name }}"
-    image: "nextcloud:stable-fpm-alpine"
+    image: "nextcloud:19.0.13-fpm-alpine"
     pull: true
     restart_policy: "always"
     exposed_ports:
