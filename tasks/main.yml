@@ -58,7 +58,7 @@
 - name: Create database container
   docker_container:
     name: "{{ application_name }}-database"
-    image: "jsurf/rpi-mariadb:latest"
+    image: "tobi312/rpi-mariadb:10.6-alpine"
     restart_policy: "always"
     memory: "100MB"
     exposed_ports:
