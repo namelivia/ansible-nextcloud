@@ -28,31 +28,31 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
     state: directory
-    mode: 0700
+    mode: 0755
 
 - name: Create the config directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
     state: directory
-    mode: 0700
+    mode: 0755
 
 - name: Create the data directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data"
     state: directory
-    mode: 0700
+    mode: 0755
 
 - name: Create the themes directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes"
     state: directory
-    mode: 0700
+    mode: 0755
 
 - name: Create the apps directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
     state: directory
-    mode: 0700
+    mode: 0755
 
 # TODO: There is no official MariaDB image for armv7
 - name: Create database container
@@ -138,21 +138,6 @@
     owner: root
     group: root
     mode: '0644'
-
-- name: Install the tasks app
-  unarchive:
-    src: ../apps/tasks.tar.gz
-    dest: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
-
-- name: Install the notes app
-  unarchive:
-    src: ../apps/notes.tar.gz
-    dest: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
-
-- name: Install the calendar app
-  unarchive:
-    src: ../apps/calendar.tar.gz
-    dest: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
 
 - name: Setup database backups
   include_role:
