@@ -60,6 +60,7 @@
     name: "{{ application_name }}-database"
     image: "tobi312/rpi-mariadb:10.3-alpine"
     restart_policy: "always"
+    cleanup: true
     memory: "100MB"
     exposed_ports:
       - "3306"
@@ -83,6 +84,7 @@
     name: "{{ app_container_name }}"
     image: "nextcloud:19.0.13-fpm-alpine"
     pull: true
+    cleanup: true
     restart_policy: "always"
     exposed_ports:
       - "9000"
@@ -110,6 +112,7 @@
     name: "{{ application_name }}-nginx"
     image: "nginx:latest"
     memory: "10MB"
+    cleanup: true
     log_driver: "awslogs"
     log_options:
       awslogs-region: "{{ cloudwatch_region }}"
