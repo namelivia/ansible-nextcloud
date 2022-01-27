@@ -69,6 +69,7 @@
     volumes:
       - nextcloud-data:/var/lib/mysql
     log_driver: "awslogs"
+    command: "--transaction-isolation=READ-COMMITTED --binlog-format=ROW"
     log_options:
       awslogs-region: "{{ cloudwatch_region }}"
       awslogs-group: "{{ cloudwatch_log_group }}"
