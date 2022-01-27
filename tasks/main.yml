@@ -87,8 +87,6 @@
     pull: true
     cleanup: true
     restart_policy: "always"
-    links:
-      - "{{ application_name }}-database:database"
     exposed_ports:
       - "9000"
     networks:
@@ -109,6 +107,23 @@
       MYSQL_DATABASE: "{{ database_name }}"
       MYSQL_USER: "{{ database_user }}"
       MYSQL_PASSWORD: "{{ database_password }}"
+      REDIS_HOST: "{{ application_name }}-cache"
+
+- name: Create redis container
+  docker_container:
+    name: "{{ application_name }}-cache"
+    image: "redis:6.2.6-alpine3.15"
+    pull: true
+    cleanup: true
+    restart_policy: "always"
+    exposed_ports:
+      - "6379"
+    networks:
+    log_driver: "awslogs"
+    log_options:
+      awslogs-region: "{{ cloudwatch_region }}"
+      awslogs-group: "{{ cloudwatch_log_group }}"
+      awslogs-stream: "{{ application_name }}-cache"
 
 - name: Create nginx container
   docker_container:
