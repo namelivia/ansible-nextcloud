@@ -22,3 +22,6 @@ roles:
  - `mysql_root_password` Password for the MariaDB root user.
  - `dump_day` Day of the week in which the database will be backed up.
  - `backup_day` Day of the week in which the filesystem will be backed up.
+ - `trusted_domains` Domains for the app to be executed from.
+ - `admin_user` Nextcloud admin username
+ - `admin_password` Nextcloud admin password

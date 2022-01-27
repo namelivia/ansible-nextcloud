@@ -11,6 +11,9 @@
       - mysql_root_password is defined
       - dump_day is defined
       - backup_day is defined
+      - trusted_domains is defined
+      - admin_user is defined
+      - admin_password is defined
 
 - name: Create the dockernetwork
   docker_network:
@@ -28,31 +31,31 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
     state: directory
-    mode: 0755
+    mode: 0777  # TODO: Too permissive. More info: https://github.com/nextcloud/docker/issues/359
 
 - name: Create the config directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
     state: directory
-    mode: 0755
+    mode: 0777
 
 - name: Create the data directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data"
     state: directory
-    mode: 0755
+    mode: 0777
 
 - name: Create the themes directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes"
     state: directory
-    mode: 0755
+    mode: 0777
 
 - name: Create the apps directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
     state: directory
-    mode: 0755
+    mode: 0777
 
 # TODO: There is no official MariaDB image for armv7
 - name: Create database container
@@ -108,6 +111,9 @@
       MYSQL_USER: "{{ database_user }}"
       MYSQL_PASSWORD: "{{ database_password }}"
       REDIS_HOST: "{{ application_name }}-cache"
+      TRUSTED_DOMAINS: "{{ trusted_domains }}"
+      NEXTCLOUD_ADMIN_USER: "{{ admin_user }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ admin_password }}"
 
 - name: Create redis container
   docker_container:
@@ -119,6 +125,7 @@
     exposed_ports:
       - "6379"
     networks:
+      - name: "{{ docker_network_name }}"
     log_driver: "awslogs"
     log_options:
       awslogs-region: "{{ cloudwatch_region }}"
