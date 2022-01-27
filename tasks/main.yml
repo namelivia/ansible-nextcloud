@@ -86,6 +86,8 @@
     pull: true
     cleanup: true
     restart_policy: "always"
+    links:
+      - "{{ application_name }}-database:database"
     exposed_ports:
       - "9000"
     networks:
