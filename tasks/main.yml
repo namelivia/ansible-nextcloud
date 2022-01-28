@@ -31,33 +31,32 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
     state: directory
-    mode: 0770  # TODO: Too permissive. More info: https://github.com/nextcloud/docker/issues/359
+    mode: 0755  # TODO: Should be owned by www-data. More info: https://github.com/nextcloud/docker/issues/359
 
 - name: Create the config directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
     state: directory
-    mode: 0770
+    mode: 0755
 
 - name: Create the data directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data"
     state: directory
-    mode: 0770
+    mode: 0755
 
 - name: Create the themes directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes"
     state: directory
-    mode: 0770
+    mode: 0755
 
 - name: Create the apps directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
     state: directory
-    mode: 0770
+    mode: 0755
 
-# TODO: There is no official MariaDB image for armv7
 - name: Create database container
   docker_container:
     name: "{{ application_name }}-database"
