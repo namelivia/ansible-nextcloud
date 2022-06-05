@@ -15,6 +15,8 @@
       - admin_user is defined
       - admin_password is defined
       - php_upload_limit is defined
+      - uid is defined
+      - gid is defined
 
 - name: Create the dockernetwork
   docker_network:
@@ -93,6 +95,7 @@
     restart_policy: "always"
     exposed_ports:
       - "9000"
+    user: "{{ uid }}:{{ gid }}"
     networks:
       - name: "{{ docker_network_name }}"
     volumes:
