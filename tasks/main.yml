@@ -14,6 +14,7 @@
       - trusted_domains is defined
       - admin_user is defined
       - admin_password is defined
+      - php_upload_limit is defined
 
 - name: Create the dockernetwork
   docker_network:
@@ -81,6 +82,7 @@
       MYSQL_DATABASE: "{{ database_name }}"
       MYSQL_USER: "{{ database_user }}"
       MYSQL_PASSWORD: "{{ database_password }}"
+      PHP_UPLOAD_LIMIT: "{{ php_upload_limit }}"
 
 - name: Create app container
   docker_container:
