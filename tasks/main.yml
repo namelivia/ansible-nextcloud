@@ -26,10 +26,6 @@
   docker_volume:
     name: nextcloud-data
 
-- name: Create the html folder volume
-  docker_volume:
-    name: html-folder
-
 - name: Create the files directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
@@ -42,33 +38,9 @@
     state: touch
     mode: 0644  # TODO: More info: https://github.com/nextcloud/docker/issues/763
 
-- name: Create the config directory
+- name: Create the html directory
   file:
-    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
-    state: directory
-    mode: 0755
-
-- name: Create the data directory
-  file:
-    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data"
-    state: directory
-    mode: 0755
-
-- name: Create the themes directory
-  file:
-    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes"
-    state: directory
-    mode: 0755
-
-- name: Create the apps directory
-  file:
-    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps"
-    state: directory
-    mode: 0755
-
-- name: Create the custom_apps directory
-  file:
-    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/custom_apps"
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/html"
     state: directory
     mode: 0755
 
@@ -111,12 +83,7 @@
     networks:
       - name: "{{ docker_network_name }}"
     volumes:
-      - html-folder:/var/www/html
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config:/var/www/html/config"
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/var/www/html/data"
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes:/var/www/html/themes"
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps:/var/www/html/apps"
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/custom_apps:/var/www/html/custom_apps"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/html:/var/www/html"
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/redis-session.ini:/usr/local/etc/php/conf.d/redis-session.ini"
     log_driver: "awslogs"
     log_options:
@@ -168,10 +135,7 @@
       - name: "{{ docker_network_name }}"
     volumes:
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/conf.d:/etc/nginx/conf.d"
-      - html-folder:/var/www/html
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config:/var/www/html/config"
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/var/www/html/data"
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps:/var/www/html/apps"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/html:/var/www/html"
     env:
       VIRTUAL_HOST: "{{ domain_name }}"
       LETSENCRYPT_HOST: "{{ domain_name }}"
