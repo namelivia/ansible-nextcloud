@@ -66,6 +66,12 @@
     state: directory
     mode: 0755
 
+- name: Create the custom_apps directory
+  file:
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/custom_apps"
+    state: directory
+    mode: 0755
+
 - name: Create database container
   docker_container:
     name: "{{ application_name }}-database"
@@ -110,6 +116,7 @@
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/var/www/html/data"
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes:/var/www/html/themes"
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps:/var/www/html/apps"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/custom_apps:/var/www/html/custom_apps"
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/redis-session.ini:/usr/local/etc/php/conf.d/redis-session.ini"
     log_driver: "awslogs"
     log_options:
