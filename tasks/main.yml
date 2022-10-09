@@ -36,6 +36,12 @@
     state: directory
     mode: 0755  # TODO: Should be owned by www-data. More info: https://github.com/nextcloud/docker/issues/359
 
+- name: Touch redis session file
+  file:
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/redis-session.ini"
+    state: touch
+    mode: 0644  # TODO: More info: https://github.com/nextcloud/docker/issues/763
+
 - name: Create the config directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
@@ -104,6 +110,7 @@
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/var/www/html/data"
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/themes:/var/www/html/themes"
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/apps:/var/www/html/apps"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/redis-session.ini:/usr/local/etc/php/conf.d/redis-session.ini"
     log_driver: "awslogs"
     log_options:
       awslogs-region: "{{ cloudwatch_region }}"
