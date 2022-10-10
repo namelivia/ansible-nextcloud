@@ -15,8 +15,6 @@
       - admin_user is defined
       - admin_password is defined
       - php_upload_limit is defined
-      - uid is defined
-      - gid is defined
 
 - name: Create the dockernetwork
   docker_network:
@@ -30,7 +28,7 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
     state: directory
-    mode: 0755  # TODO: Should be owned by www-data. More info: https://github.com/nextcloud/docker/issues/359
+    mode: 0777  # TODO: Should be owned by www-data. More info: https://github.com/nextcloud/docker/issues/359
 
 - name: Touch redis session file
   file:
@@ -42,7 +40,7 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/html"
     state: directory
-    mode: 0755
+    mode: 0777
 
 - name: Create database container
   docker_container:
@@ -79,7 +77,6 @@
     restart_policy: "always"
     exposed_ports:
       - "9000"
-    user: "{{ uid }}:{{ gid }}"
     networks:
       - name: "{{ docker_network_name }}"
     volumes:
