@@ -14,7 +14,6 @@
       - trusted_domains is defined
       - admin_user is defined
       - admin_password is defined
-      - php_upload_limit is defined
 
 - name: Create the dockernetwork
   docker_network:
@@ -28,19 +27,19 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
     state: directory
-    mode: 0777  # TODO: Should be owned by www-data. More info: https://github.com/nextcloud/docker/issues/359
+    mode: 0755
 
-- name: Touch redis session file
+- name: Create the data directory
   file:
-    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/redis-session.ini"
-    state: touch
-    mode: 0644  # TODO: More info: https://github.com/nextcloud/docker/issues/763
-
-- name: Create the html directory
-  file:
-    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/html"
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data"
     state: directory
-    mode: 0777
+    mode: 0755
+
+- name: Create the config directory
+  file:
+    path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
+    state: directory
+    mode: 0755
 
 - name: Create database container
   docker_container:
@@ -66,85 +65,33 @@
       MYSQL_DATABASE: "{{ database_name }}"
       MYSQL_USER: "{{ database_user }}"
       MYSQL_PASSWORD: "{{ database_password }}"
-      PHP_UPLOAD_LIMIT: "{{ php_upload_limit }}"
 
 - name: Create app container
   docker_container:
     name: "{{ app_container_name }}"
-    image: "nextcloud:23.0.10-fpm-alpine"
+    image: "linuxserver/nextcloud:arm32v7-24.0.6-php8"
     pull: true
     cleanup: true
-    restart_policy: "always"
-    exposed_ports:
-      - "9000"
-    networks:
-      - name: "{{ docker_network_name }}"
-    volumes:
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/html:/var/www/html"
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/redis-session.ini:/usr/local/etc/php/conf.d/redis-session.ini"
-    log_driver: "awslogs"
-    log_options:
-      awslogs-region: "{{ cloudwatch_region }}"
-      awslogs-group: "{{ cloudwatch_log_group }}"
-      awslogs-stream: "{{ application_name }}-app"
-    env:
-      MYSQL_HOST: "{{ application_name }}-database"
-      MYSQL_DATABASE: "{{ database_name }}"
-      MYSQL_USER: "{{ database_user }}"
-      MYSQL_PASSWORD: "{{ database_password }}"
-      REDIS_HOST: "{{ application_name }}-cache"
-      TRUSTED_DOMAINS: "{{ trusted_domains }}"
-      NEXTCLOUD_ADMIN_USER: "{{ admin_user }}"
-      NEXTCLOUD_ADMIN_PASSWORD: "{{ admin_password }}"  # TODO: Ignored. https://github.com/nextcloud/docker/issues/1360
-
-- name: Create redis container
-  docker_container:
-    name: "{{ application_name }}-cache"
-    image: "redis:6.2.6-alpine3.15"
-    pull: true
-    cleanup: true
-    restart_policy: "always"
-    exposed_ports:
-      - "6379"
-    networks:
-      - name: "{{ docker_network_name }}"
-    log_driver: "awslogs"
-    log_options:
-      awslogs-region: "{{ cloudwatch_region }}"
-      awslogs-group: "{{ cloudwatch_log_group }}"
-      awslogs-stream: "{{ application_name }}-cache"
-
-- name: Create nginx container
-  docker_container:
-    name: "{{ application_name }}-nginx"
-    image: "nginx:latest"
-    memory: "10MB"
-    cleanup: true
-    log_driver: "awslogs"
-    log_options:
-      awslogs-region: "{{ cloudwatch_region }}"
-      awslogs-group: "{{ cloudwatch_log_group }}"
-      awslogs-stream: "{{ application_name }}-nginx"
     restart_policy: "always"
     exposed_ports:
       - "80"
     networks:
       - name: "{{ docker_network_name }}"
     volumes:
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/conf.d:/etc/nginx/conf.d"
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/html:/var/www/html"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config:/config"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/data"
+    log_driver: "awslogs"
+    log_options:
+      awslogs-region: "{{ cloudwatch_region }}"
+      awslogs-group: "{{ cloudwatch_log_group }}"
+      awslogs-stream: "{{ application_name }}-app"
     env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Europe/Madrid"
       VIRTUAL_HOST: "{{ domain_name }}"
       LETSENCRYPT_HOST: "{{ domain_name }}"
       VIRTUAL_PORT: "80"
-
-- name: Configure nginx site
-  template:
-    src: nextcloud.j2
-    dest: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/conf.d/default.conf"
-    owner: root
-    group: root
-    mode: '0644'
 
 - name: Setup database backups
   include_role:
