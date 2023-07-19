@@ -13,8 +13,7 @@ roles:
 ```
 
 ## Required variables
- - `cloudwatch_region` Cloudwatch region to send the logs to.
- - `cloudwatch_log_group` Cloudwatch log group to send the logs to.
+ - `loki_url` Loki endpoint to send logs.
  - `domain_name` The domain name in which the app will be served from.
  - `database_name` Name for the database Kimai will use.
  - `database_user` User that Kimai will use to connect to the database.
