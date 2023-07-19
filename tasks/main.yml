@@ -69,7 +69,7 @@
 - name: Create app container
   docker_container:
     name: "{{ app_container_name }}"
-    image: "linuxserver/nextcloud:arm32v7-latest"
+    image: "linuxserver/nextcloud:arm32v7-26.0.2"
     pull: true
     cleanup: true
     restart_policy: "always"
