@@ -77,6 +77,7 @@
       - "80"
     networks:
       - name: "{{ docker_network_name }}"
+      - name: "bridge"
     volumes:
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config:/config"
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/data"
@@ -108,3 +109,7 @@
   include_role:
     name: ansible-backups
     tasks_from: setup-s3-backups
+
+- name: Restart proxy
+  shell: 
+    cmd: docker restart proxy
