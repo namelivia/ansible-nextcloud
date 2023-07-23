@@ -14,7 +14,6 @@ roles:
 
 ## Required variables
  - `loki_url` Loki endpoint to send logs.
- - `domain_name` The domain name in which the app will be served from.
  - `database_name` Name for the database Kimai will use.
  - `database_user` User that Kimai will use to connect to the database.
  - `database_password` Password for the user to connect to the database.
@@ -24,3 +23,4 @@ roles:
  - `trusted_domains` Domains for the app to be executed from.
  - `admin_user` Nextcloud admin username
  - `admin_password` Nextcloud admin password
+ - `host_port` Port to be mapped in the host machine.
