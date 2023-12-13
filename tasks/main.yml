@@ -14,6 +14,10 @@
       - database_container_name is defined
       - database_user is defined
       - database_password is defined
+      - user is defined
+      - group is defined
+      - uid is defined
+      - gid is defined
       - database_name is defined
 
 - name: Create the dockernetwork
@@ -29,18 +33,24 @@
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
     state: directory
     mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
 
 - name: Create the data directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data"
     state: directory
     mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
 
 - name: Create the config directory
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
     state: directory
     mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
 
 - name: Create database
   include_role:
@@ -53,6 +63,7 @@
     image: "nextcloud:26.0.2"
     pull: true
     cleanup: true
+    user: "{{uid}}:{{gid}}"
     restart_policy: "always"
     exposed_ports:
       - "80"
