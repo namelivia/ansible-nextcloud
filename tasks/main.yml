@@ -42,34 +42,10 @@
     state: directory
     mode: 0755
 
-- name: Create database container
-  docker_container:
-    name: "{{ application_name }}-database"
-    image: "tobi312/rpi-mariadb:10.6-alpine"
-    restart_policy: "always"
-    cleanup: true
-    memory: "100MB"
-    exposed_ports:
-      - "3306"
-    networks:
-      - name: "{{ docker_network_name }}"
-    volumes:
-      - nextcloud-data:/var/lib/mysql
-    command: "--transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-file-per-table=1 --skip-innodb-read-only-compressed"
-    log_driver: "loki"
-    log_options:
-      loki-url: "{{ loki_url }}"
-      loki-batch-size: "400"
-    env:
-      MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
-      MYSQL_DATABASE: "{{ database_name }}"
-      MYSQL_USER: "{{ database_user }}"
-      MYSQL_PASSWORD: "{{ database_password }}"
-
 - name: Create app container
   docker_container:
     name: "{{ app_container_name }}"
-    image: "linuxserver/nextcloud:arm32v7-26.0.2"
+    image: "linuxserver/nextcloud:26.0.2"
     pull: true
     cleanup: true
     restart_policy: "always"

@@ -14,8 +14,8 @@ roles:
 
 ## Required variables
  - `loki_url` Loki endpoint to send logs.
- - `database_name` Name for the database Kimai will use.
- - `database_user` User that Kimai will use to connect to the database.
+ - `database_name` Name for the database Nextcloud will use.
+ - `database_user` User that Nextcloud will use to connect to the database.
  - `database_password` Password for the user to connect to the database.
  - `mysql_root_password` Password for the MariaDB root user.
  - `dump_day` Day of the week in which the database will be backed up.
