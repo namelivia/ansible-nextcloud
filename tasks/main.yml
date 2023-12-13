@@ -5,10 +5,6 @@
       - application_name is defined
       - docker_network_name is defined
       - host_port is defined
-      - database_name is defined
-      - database_user is defined
-      - database_password is defined
-      - mysql_root_password is defined
       - loki_url is defined
       - dump_day is defined
       - backup_day is defined
@@ -66,13 +62,6 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Europe/Madrid"
-
-- name: Setup database backups
-  include_role:
-    name: ansible-backups
-    tasks_from: setup-mariadb-database-backups
-  vars:
-    database_container_name: "{{ application_name }}-database"
 
 - name: Setup file backups
   include_role:
