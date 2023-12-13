@@ -68,9 +68,13 @@
       loki-url: "{{ loki_url }}"
       loki-batch-size: "400"
     env:
-      PUID: "1000"
-      PGID: "1000"
-      TZ: "Europe/Madrid"
+      POSTGRES_DB: "{{ database_name }}"
+      POSTGRES_USER: "{{ database_user }}"
+      POSTGRES_PASSWORD: "{{ database_password }}"
+      POSTGRES_HOST: "{{ database_container_name }}"
+      NEXTCLOUD_ADMIN_USER: "{{ admin_user }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ admin_password }}"
+      NEXTCLOUD_TRUSTED_DOMAINS: "{{ trusted_domains }}"
 
 - name: Setup file backups
   include_role:
