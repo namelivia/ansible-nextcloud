@@ -61,8 +61,8 @@
     networks:
       - name: "{{ docker_network_name }}"
     volumes:
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config:/config"
-      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/data"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config:/var/www/html/config"
+      - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/var/www/html/data"
     log_driver: "loki"
     log_options:
       loki-url: "{{ loki_url }}"
