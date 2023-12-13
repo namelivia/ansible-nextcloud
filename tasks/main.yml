@@ -11,6 +11,10 @@
       - trusted_domains is defined
       - admin_user is defined
       - admin_password is defined
+      - database_container_name is defined
+      - database_user is defined
+      - database_password is defined
+      - database_name is defined
 
 - name: Create the dockernetwork
   docker_network:
@@ -38,10 +42,15 @@
     state: directory
     mode: 0755
 
+- name: Create database
+  include_role:
+    name: ansible-postgres
+    tasks_from: create-postgres-database-if-not-exists
+
 - name: Create app container
   docker_container:
     name: "{{ app_container_name }}"
-    image: "linuxserver/nextcloud:26.0.2"
+    image: "nextcloud:26.0.2"
     pull: true
     cleanup: true
     restart_policy: "always"
