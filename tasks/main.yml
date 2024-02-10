@@ -32,7 +32,7 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: "{{ user }}"
     group: "{{ group }}"
 
@@ -40,7 +40,7 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: "{{ user }}"
     group: "{{ group }}"
 
@@ -48,7 +48,7 @@
   file:
     path: "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: "{{ user }}"
     group: "{{ group }}"
 
@@ -63,7 +63,7 @@
     image: "nextcloud:24.0.6"
     pull: true
     cleanup: true
-    user: "{{uid}}:{{gid}}"
+    user: "{{ uid }}:{{ gid }}"
     restart_policy: "always"
     exposed_ports:
       - "80"

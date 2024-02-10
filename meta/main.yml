@@ -5,8 +5,6 @@ galaxy_info:
   description: Ansible role I use to install and configure nextcloud
   license: GPLv2
   min_ansible_version: 2.5.1
-  dependencies:
-    - ansible-backups
   platforms:
     - name: Ubuntu
       versions:
