@@ -71,6 +71,7 @@
       - "0.0.0.0:{{ host_port }}:80"
     networks:
       - name: "{{ docker_network_name }}"
+      - name: "database_network"
     volumes:
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/config:/var/www/html/config"
       - "{{ hostvars[inventory_hostname].working_directory }}{{ application_name }}/files/data:/var/www/html/data"
