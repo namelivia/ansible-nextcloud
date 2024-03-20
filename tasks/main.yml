@@ -60,7 +60,7 @@
 - name: Create app container
   docker_container:
     name: "{{ app_container_name }}"
-    image: "nextcloud:24.0.12"
+    image: "nextcloud:25.0.13"
     pull: true
     cleanup: true
     user: "{{ uid }}:{{ gid }}"
